@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LMP Calculator - Find Your Last Menstrual Period Date</title>
+<meta name="description" content="Free LMP calculator. Work out the first day of your last menstrual period from a due date, gestational age or conception date.">
+<style>
+  :root {
+    --purple: #8b2fe8;
+    --purple-dark: #2a1245;
+    --pink: #ff6f7d;
+    --border: #e3d5fa;
+    --muted: #6b6280;
+    --bg: #faf7ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--purple-dark); background: #fff; line-height: 1.5; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 16px; }
+  .hero { background: linear-gradient(135deg, #ff6f7d 0%, #b04bc9 100%); color: #fff; border-radius: 14px; padding: 28px 28px 24px; }
+  .hero h1 { margin: 0 0 8px; font-size: clamp(24px, 4.5vw, 34px); font-family: Georgia, "Times New Roman", serif; line-height: 1.2; }
+  .hero p { margin: 0 0 14px; max-width: 620px; opacity: .95; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { border: 1px solid rgba(255,255,255,.6); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+  h2 { text-align: center; margin: 28px 0 6px; font-size: 24px; }
+  .sub { text-align: center; color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tab { border: 1px solid var(--border); background: #fff; color: var(--purple-dark); border-radius: 10px; padding: 9px 14px; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .card { border: 1px solid var(--border); border-radius: 14px; padding: 22px; background: #fff; box-shadow: 0 4px 18px rgba(139,47,232,.06); }
+  .card h3 { margin: 0 0 4px; font-size: 19px; }
+  .card .desc { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field label { display: block; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; background: #fff; color: var(--purple-dark); font-family: inherit; }
+  .field input:focus, .field select:focus, .tab:focus-visible, button:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 5px; }
+  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .btn { border: 0; border-radius: 10px; padding: 11px 22px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .btn.primary { background: var(--purple); color: #fff; }
+  .btn.ghost { background: #fff; color: var(--purple-dark); border: 1px solid var(--border); }
+  .error { color: #b3261e; font-size: 14px; margin-top: 12px; min-height: 1em; }
+  .results { margin-top: 22px; display: none; }
+  .results.show { display: block; }
+  .main-result { background: linear-gradient(135deg, #8b2fe8, #b04bc9); color: #fff; border-radius: 12px; padding: 18px 20px; text-align: center; }
+  .main-result .label { font-size: 13px; opacity: .9; text-transform: uppercase; letter-spacing: .05em; }
+  .main-result .value { font-size: clamp(22px, 5vw, 30px); font-weight: 800; margin-top: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
+  .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .stat .label { font-size: 12px; color: var(--muted); }
+  .stat .value { font-weight: 800; font-size: 16px; margin-top: 2px; }
+  .progress { margin-top: 14px; }
+  .bar { height: 10px; background: #efe6fc; border-radius: 999px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ff6f7d, #8b2fe8); }
+  .progress .cap { font-size: 12px; color: var(--muted); margin-top: 5px; }
+  .disclaimer { margin-top: 22px; font-size: 12px; color: var(--muted); text-align: center; }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .hero { padding: 22px 18px; }
+    .card { padding: 16px; }
+    .actions .btn { flex: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section class="hero">
+    <h1>LMP Calculator: Find Your Last Menstrual Period Date</h1>
+    <p>Work out the first day of your last menstrual period (LMP) from a due date, a known gestational age or a conception date. Free, instant and private.</p>
+    <div class="pills">
+      <span class="pill">Free, no sign-up</span>
+      <span class="pill">3 calculation methods</span>
+      <span class="pill">Works on any device</span>
+    </div>
+  </section>
+
+  <h2>Run the LMP Calculator</h2>
+  <p class="sub">Choose the tab that matches what you already know, fill in the fields, and press Calculate.</p>
+
+  <div class="tabs" role="tablist" aria-label="Calculation method">
+    <button class="tab" role="tab" id="tab-edd" aria-selected="true" aria-controls="panel" data-mode="edd">From Due Date</button>
+    <button class="tab" role="tab" id="tab-ga" aria-selected="false" aria-controls="panel" data-mode="ga">From Gestational Age</button>
+    <button class="tab" role="tab" id="tab-con" aria-selected="false" aria-controls="panel" data-mode="con">From Conception Date</button>
+  </div>
+
+  <div class="card" id="panel" role="tabpanel">
+    <h3 id="title"></h3>
+    <p class="desc" id="desc"></p>
+
+    <form id="form" novalidate>
+      <div class="grid">
+        <div class="field" id="f-date">
+          <label for="date" id="date-label">Due date</label>
+          <input type="date" id="date">
+          <div class="hint" id="date-hint"></div>
+        </div>
+
+        <div class="field" id="f-cycle">
+          <label for="cycle">Average cycle length (days)</label>
+          <select id="cycle"></select>
+          <div class="hint">Adjusts the estimate for cycles other than 28 days.</div>
+        </div>
+
+        <div class="field" id="f-weeks" hidden>
+          <label for="weeks">Gestational age: weeks</label>
+          <input type="number" id="weeks" min="0" max="42" step="1" placeholder="e.g. 12" inputmode="numeric">
+        </div>
+
+        <div class="field" id="f-days" hidden>
+          <label for="days">Gestational age: extra days</label>
+          <input type="number" id="days" min="0" max="6" step="1" placeholder="0 to 6" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Calculate</button>
+        <button type="button" class="btn ghost" id="reset">Reset</button>
+      </div>
+      <div class="error" id="error" role="alert"></div>
+    </form>
+
+    <div class="results" id="results" aria-live="polite">
+      <div class="main-result">
+        <div class="label">Estimated first day of last period (LMP)</div>
+        <div class="value" id="r-lmp">-</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="label">Estimated Due Date</div><div class="value" id="r-edd">-</div></div>
+        <div class="stat"><div class="label">Estimated Conception</div><div class="value" id="r-con">-</div></div>
+        <div class="stat"><div class="label">Gestational Age Today</div><div class="value" id="r-ga">-</div></div>
+        <div class="stat"><div class="label">Trimester</div><div class="value" id="r-tri">-</div></div>
+        <div class="stat"><div class="label">Days Until Due Date</div><div class="value" id="r-left">-</div></div>
+      </div>
+      <div class="progress">
+        <div class="bar"><span id="r-bar"></span></div>
+        <div class="cap" id="r-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="disclaimer">This calculator gives estimates for information only and does not replace medical advice. Dating uses Naegele's Rule (280 days from LMP, adjusted for cycle length). Always confirm dates with your doctor or midwife, especially if an ultrasound scan gives a different date.</p>
+</div>
+
+<script>
+// CORE-START
+var MS_DAY = 86400000;
+function parseDate(str) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return null;
+  var p = str.split('-');
+  var t = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  if (isNaN(t)) return null;
+  var chk = new Date(t);
+  if (chk.getUTCFullYear() !== +p[0] || chk.getUTCMonth() !== +p[1] - 1 || chk.getUTCDate() !== +p[2]) return null;
+  return t;
+}
+function addDays(t, n) { return t + n * MS_DAY; }
+function todayUTC() {
+  var n = new Date();
+  return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+}
+function compute(mode, dateMs, cycle, weeks, days) {
+  var adj = cycle - 28, lmp;
+  if (mode === 'edd') { lmp = addDays(dateMs, -280 - adj); }
+  else if (mode === 'con') { lmp = addDays(dateMs, -14 - adj); }
+  else { lmp = addDays(dateMs, -(weeks * 7 + days)); adj = 0; }
+  return {
+    lmp: lmp,
+    edd: addDays(lmp, 280 + adj),
+    con: addDays(lmp, 14 + adj)
+  };
+}
+function gaFrom(lmp, nowMs) {
+  var d = Math.round((nowMs - lmp) / MS_DAY);
+  return { total: d, weeks: Math.floor(d / 7), days: ((d % 7) + 7) % 7 };
+}
+// CORE-END
+
+var MODES = {
+  edd: { title: 'Find LMP from Due Date', desc: 'Enter your estimated due date (EDD) and usual cycle length to work out the first day of your last period.', label: 'Due date', hint: 'Your estimated due date (EDD).', showCycle: true, showGA: false },
+  ga:  { title: 'Find LMP from Gestational Age', desc: 'Know how many weeks pregnant you were on a certain date, for example from a scan report? Enter it here.', label: 'Date of the scan or check-up', hint: 'The date the gestational age was measured.', showCycle: false, showGA: true },
+  con: { title: 'Find LMP from Conception Date', desc: 'Enter the date of conception (or ovulation) and your usual cycle length to estimate your LMP.', label: 'Conception date', hint: 'Use the date of ovulation or conception if you know it.', showCycle: true, showGA: false }
+};
+var mode = 'edd';
+var $ = function (id) { return document.getElementById(id); };
+
+(function fillCycle() {
+  var s = $('cycle');
+  for (var i = 21; i <= 35; i++) {
+    var o = document.createElement('option');
+    o.value = i;
+    o.textContent = i + ' days' + (i === 28 ? ' (typical)' : '');
+    if (i === 28) o.selected = true;
+    s.appendChild(o);
+  }
+})();
+
+function fmt(t) {
+  return new Date(t).toLocaleDateString('en-GB', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function setMode(m) {
+  mode = m;
+  var cfg = MODES[m];
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.setAttribute('aria-selected', b.dataset.mode === m ? 'true' : 'false');
+  });
+  $('title').textContent = cfg.title;
+  $('desc').textContent = cfg.desc;
+  $('date-label').textContent = cfg.label;
+  $('date-hint').textContent = cfg.hint;
+  $('f-cycle').hidden = !cfg.showCycle;
+  $('f-weeks').hidden = !cfg.showGA;
+  $('f-days').hidden = !cfg.showGA;
+  $('error').textContent = '';
+  $('results').classList.remove('show');
+}
+
+document.querySelectorAll('.tab').forEach(function (b) {
+  b.addEventListener('click', function () { setMode(b.dataset.mode); });
+});
+
+$('reset').addEventListener('click', function () {
+  $('form').reset();
+  $('error').textContent = '';
+  $('results').classList.remove('show');
+});
+
+$('form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var err = $('error');
+  err.textContent = '';
+  var dateMs = parseDate($('date').value);
+  if (dateMs === null) { err.textContent = 'Please enter a valid date.'; return; }
+
+  var cycle = parseInt($('cycle').value, 10) || 28;
+  var weeks = 0, days = 0;
+  if (mode === 'ga') {
+    var wRaw = $('weeks').value.trim(), dRaw = $('days').value.trim();
+    weeks = parseInt(wRaw, 10);
+    days = dRaw === '' ? 0 : parseInt(dRaw, 10);
+    if (isNaN(weeks) || weeks < 0 || weeks > 42) { err.textContent = 'Weeks must be between 0 and 42.'; return; }
+    if (isNaN(days) || days < 0 || days > 6) { err.textContent = 'Extra days must be between 0 and 6.'; return; }
+  }
+
+  var r = compute(mode, dateMs, cycle, weeks, days);
+  var now = todayUTC();
+  var ga = gaFrom(r.lmp, now);
+  var left = Math.round((r.edd - now) / MS_DAY);
+
+  $('r-lmp').textContent = fmt(r.lmp);
+  $('r-edd').textContent = fmt(r.edd);
+  $('r-con').textContent = fmt(r.con);
+
+  if (ga.total < 0) {
+    $('r-ga').textContent = 'Not started yet';
+    $('r-tri').textContent = '-';
+    $('r-left').textContent = left + ' days';
+    $('r-bar').style.width = '0%';
+    $('r-cap').textContent = 'The calculated LMP is in the future. Please double-check the date you entered.';
+  } else {
+    $('r-ga').textContent = ga.weeks + ' weeks ' + ga.days + ' days';
+    $('r-tri').textContent = ga.weeks < 14 ? '1st trimester' : (ga.weeks < 28 ? '2nd trimester' : '3rd trimester');
+    $('r-left').textContent = left >= 0 ? left + ' days' : 'Passed ' + Math.abs(left) + ' days ago';
+    var pct = Math.max(0, Math.min(100, Math.round(ga.total / 280 * 100)));
+    $('r-bar').style.width = pct + '%';
+    $('r-cap').textContent = 'Pregnancy progress: ' + pct + '% (based on 280 days)';
+    if (ga.total > 300) { $('r-cap').textContent += '. This is well past 42 weeks, so please check the date you entered.'; }
+  }
+  $('results').classList.add('show');
+});
+
+setMode('edd');
+</script>
+</body>
+</html>
